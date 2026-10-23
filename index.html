@@ -122,11 +122,9 @@
         { time: "20:00", temp: 14, icon: "🌧️", rain: 12 },
         { time: "21:00", temp: 13, icon: "🌧️", rain: 15 }
       ],
-      // Buienalarm data: total expected rain in mm
       buienalarm: {
         totalRain: 42
       },
-      // KNMI Weather Alarm
       knmiAlarm: {
         code: "Code geel",
         description: "Waarschuwing voor zware buien en onweer in de regio Limburg."
@@ -144,14 +142,116 @@
       document.getElementById('rain-expected').textContent = weatherData.buienalarm.totalRain;
 
       // KNMI Weather Alarm
-      const alarmCode = weatherData.knmiAlarm.code;
+      const alarmCode = weatherData.knmiAlarm.code.toLowerCase();
       const alarmDesc = weatherData.knmiAlarm.description;
       const alarmElement = document.getElementById('weather-alarm');
       const codeElement = document.getElementById('weather-alarm-code');
       const descElement = document.getElementById('weather-alarm-desc');
 
-      codeElement.textContent = alarmCode;
+      codeElement.textContent = weatherData.knmiAlarm.code;
       descElement.textContent = alarmDesc;
 
-      // Remove all color classes
-      alarmElement.classList.remove('weather-code-green', 'weather-code-yellow', 'weather
+      // Reset colour classes
+      alarmElement.classList.remove('weather-code-green', 'weather-code-yellow', 'weather-code-red', 'weather-code-none');
+
+      // Apply colour based on code
+      if (alarmCode.includes('groen')) {
+        alarmElement.classList.add('weather-code-green');
+      } else if (alarmCode.includes('geel')) {
+        alarmElement.classList.add('weather-code-yellow');
+      } else if (alarmCode.includes('rood')) {
+        alarmElement.classList.add('weather-code-red');
+      } else {
+        alarmElement.classList.add('weather-code-none');
+      }
+
+      // Hourly forecast
+      const hourlyContainer = document.getElementById('hourly-forecast');
+      hourlyContainer.innerHTML = ''; // clear any existing
+      weatherData.hourly.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'flex flex-col items-center bg-gray-50 p-2 rounded';
+        card.innerHTML = `
+          <div class="text-xl">${item.icon}</div>
+          <div class="text-sm font-medium">${item.temp}°C</div>
+          <div class="text-xs text-gray-600">${item.time}</div>
+        `;
+        hourlyContainer.appendChild(card);
+      });
+
+      // Temperature line chart
+      const ctx = document.getElementById('tempChart').getContext('2d');
+      const labels = weatherData.hourly.map(h => h.time);
+      const temps = weatherData.hourly.map(h => h.temp);
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Temperatuur (°C)',
+            data: temps,
+            borderColor: '#3b82f6',
+            backgroundColor: 'rgba(59,130,246,0.1)',
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: false }
+          }
+        }
+      });
+    }
+
+    // Dummy Energy Consumption Chart
+    function initEnergyChart() {
+      const ctx = document.getElementById('energyChart').getContext('2d');
+      const labels = ['Jan', 'Feb', 'Mrt', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const data = [120, 150, 130, 170, 160, 180, 200, 190, 175, 165, 155, 140];
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Energie (kWh)',
+            data: data,
+            backgroundColor: '#10b981'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // Device toggle handling (simple console log)
+    function initDeviceToggles() {
+      document.querySelectorAll('.toggle-checkbox').forEach(cb => {
+        cb.addEventListener('change', e => {
+          const device = e.target.dataset.device;
+          const state = e.target.checked ? 'ON' : 'OFF';
+          console.log(`Device ${device} switched ${state}`);
+        });
+      });
+    }
+
+    // Initialise everything after DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      initWeather();
+      initEnergyChart();
+      initDeviceToggles();
+    });
+  </script>
+</body>
+</html>
