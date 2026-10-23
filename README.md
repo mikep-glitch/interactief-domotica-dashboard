@@ -1,7 +1,7 @@
 # Interactief Domotica Dashboard
 
-Autonoom beheerd door Proost Cluster.
-- Laatste prompt: in het domotica dashboard staat de weersverspelling er wel in echter werkt het niet, ik zie geen temperatuur of neerslag, kan je dit fixen?
-- Type: Update
-- Model: GPT-OSS 120B (Groq)
-- Live App: https://interactief-domotica-dashboard.proost.app
+Autonoom gebouwd door Proost Cluster.
+- Prompt: kan je de weersvoorspelling in het dashboard werkend maken nu?
+- Model: Qwen 3.8 (Groq)
+- Echte API integratie: Open-Meteo / Live REST
+- Live URL: https://interactief-domotica-dashboard.proost.app
