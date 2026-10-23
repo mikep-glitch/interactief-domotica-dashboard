@@ -15,6 +15,10 @@
     .toggle-checkbox:checked + .toggle-label .toggle-dot {
       transform: translateX(1.25rem); /* Tailwind translate-x-5 */
     }
+    .weather-code-green { background-color: #008000 !important; }
+    .weather-code-yellow { background-color: #ffd700 !important; }
+    .weather-code-red { background-color: #CC0000 !important; }
+    .weather-code-none { background-color: #e5e7eb !important; }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -25,7 +29,14 @@
   <main class="flex-1 p-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
     <!-- Weather Section -->
     <section class="bg-white rounded-lg shadow p-4 flex flex-col">
-      <h2 class="text-xl font-semibold mb-2">Weersvoorspelling</h2>
+      <h2 class="text-xl font-semibold mb-2">Weersvoorspelling Kerkrade</h2>
+      
+      <!-- KNMI Weather Alarm Code -->
+      <div id="weather-alarm" class="mb-4 p-3 rounded-lg text-white font-bold text-center transition-colors duration-300 weather-code-none">
+        <span id="weather-alarm-code">Geen code</span>
+        <p id="weather-alarm-desc" class="text-sm font-normal mt-1">Geen weerswaarschuwing</p>
+      </div>
+
       <div id="weather" class="flex items-center space-x-4">
         <div class="text-5xl" id="weather-icon">☀️</div>
         <div>
@@ -33,6 +44,15 @@
           <p class="text-gray-600" id="description">--</p>
         </div>
       </div>
+
+      <!-- Buienalarm Rain Expected -->
+      <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+        <h3 class="text-sm font-medium text-blue-800 mb-1">Buienalarm: Verwachte neerslag</h3>
+        <p class="text-lg font-bold text-blue-900">
+          <span id="rain-expected">0</span> mm
+        </p>
+      </div>
+
       <div class="mt-4">
         <h3 class="text-sm font-medium text-gray-700 mb-2">Uurlijkse voorspelling</h3>
         <div id="hourly-forecast" class="flex space-x-4 overflow-x-auto pb-2">
@@ -85,14 +105,53 @@
   </main>
 
   <script>
-    // Mock weather data
+    // Mock weather data for Kerkrade
     const weatherData = {
       current: {
         temp: 18,
-        description: "Clear"
+        description: "Zonnig",
+        icon: "☀️"
+      },
+      hourly: [
+        { time: "14:00", temp: 18, icon: "☀️", rain: 0 },
+        { time: "15:00", temp: 19, icon: "☀️", rain: 0 },
+        { time: "16:00", temp: 18, icon: "⛅", rain: 0 },
+        { time: "17:00", temp: 17, icon: "🌧️", rain: 2 },
+        { time: "18:00", temp: 16, icon: "🌧️", rain: 5 },
+        { time: "19:00", temp: 15, icon: "🌧️", rain: 8 },
+        { time: "20:00", temp: 14, icon: "🌧️", rain: 12 },
+        { time: "21:00", temp: 13, icon: "🌧️", rain: 15 }
+      ],
+      // Buienalarm data: total expected rain in mm
+      buienalarm: {
+        totalRain: 42
+      },
+      // KNMI Weather Alarm
+      knmiAlarm: {
+        code: "Code geel",
+        description: "Waarschuwing voor zware buien en onweer in de regio Limburg."
       }
     };
-    // Placeholder for additional JavaScript logic
-  </script>
-</body>
-</html>
+
+    // Initialize Weather Display
+    function initWeather() {
+      // Current Weather
+      document.getElementById('temp').textContent = weatherData.current.temp + '°C';
+      document.getElementById('description').textContent = weatherData.current.description;
+      document.getElementById('weather-icon').textContent = weatherData.current.icon;
+
+      // Buienalarm Rain Expected
+      document.getElementById('rain-expected').textContent = weatherData.buienalarm.totalRain;
+
+      // KNMI Weather Alarm
+      const alarmCode = weatherData.knmiAlarm.code;
+      const alarmDesc = weatherData.knmiAlarm.description;
+      const alarmElement = document.getElementById('weather-alarm');
+      const codeElement = document.getElementById('weather-alarm-code');
+      const descElement = document.getElementById('weather-alarm-desc');
+
+      codeElement.textContent = alarmCode;
+      descElement.textContent = alarmDesc;
+
+      // Remove all color classes
+      alarmElement.classList.remove('weather-code-green', 'weather-code-yellow', 'weather
