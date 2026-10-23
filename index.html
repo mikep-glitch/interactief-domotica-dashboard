@@ -4,34 +4,57 @@
   <meta charset="UTF-8">
   <title>Interactief Domotica Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Chart.js via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .toggle-checkbox:checked + .toggle-label {
-      background-color: #10B981; /* Tailwind green-500 */
+      background-color: #10B981;
     }
     .toggle-checkbox:checked + .toggle-label .toggle-dot {
-      transform: translateX(1.25rem); /* Tailwind translate-x-5 */
+      transform: translateX(1.25rem);
     }
     .weather-code-green { background-color: #008000 !important; }
     .weather-code-yellow { background-color: #ffd700 !important; }
     .weather-code-red { background-color: #CC0000 !important; }
     .weather-code-none { background-color: #e5e7eb !important; }
+    .weather-code-none #weather-alarm-code,
+    .weather-code-none #weather-alarm-desc { color: #374151; }
+    .weather-code-yellow #weather-alarm-code,
+    .weather-code-yellow #weather-alarm-desc { color: #1f2937; }
+    .weather-code-green #weather-alarm-code,
+    .weather-code-green #weather-alarm-desc { color: #ffffff; }
+    .weather-code-red #weather-alarm-code,
+    .weather-code-red #weather-alarm-desc { color: #ffffff; }
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid #ffffff;
+      border-radius: 50%;
+      width: 1.25rem;
+      height: 1.25rem;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
-  <header class="bg-blue-600 text-white p-4 shadow-md">
+  <header class="bg-blue-600 text-white p-4 shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
     <h1 class="text-2xl font-bold">Interactief Domotica Dashboard</h1>
+    <div class="flex items-center gap-3">
+      <span id="last-updated" class="text-sm opacity-90">Laatst bijgewerkt: --</span>
+      <button id="refresh-btn" class="bg-white text-blue-600 px-4 py-1.5 rounded-md font-semibold text-sm hover:bg-blue-50 transition-colors flex items-center gap-2">
+        <span id="refresh-icon" class="inline-block">⟳</span> Verversen
+      </button>
+    </div>
   </header>
 
   <main class="flex-1 p-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
     <!-- Weather Section -->
     <section class="bg-white rounded-lg shadow p-4 flex flex-col">
       <h2 class="text-xl font-semibold mb-2">Weersvoorspelling Kerkrade</h2>
-      
-      <!-- KNMI Weather Alarm Code -->
+
       <div id="weather-alarm" class="mb-4 p-3 rounded-lg text-white font-bold text-center transition-colors duration-300 weather-code-none">
         <span id="weather-alarm-code">Geen code</span>
         <p id="weather-alarm-desc" class="text-sm font-normal mt-1">Geen weerswaarschuwing</p>
@@ -42,10 +65,10 @@
         <div>
           <p class="text-2xl" id="temp">--°C</p>
           <p class="text-gray-600" id="description">--</p>
+          <p class="text-sm text-gray-500 mt-1">Voelt aan als <span id="feels-like">--</span>°C · Wind <span id="wind">--</span> km/u</p>
         </div>
       </div>
 
-      <!-- Buienalarm Rain Expected -->
       <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
         <h3 class="text-sm font-medium text-blue-800 mb-1">Buienalarm: Verwachte neerslag</h3>
         <p class="text-lg font-bold text-blue-900">
@@ -72,7 +95,6 @@
     <section class="bg-white rounded-lg shadow p-4">
       <h2 class="text-xl font-semibold mb-4">Apparaten</h2>
       <div class="space-y-4">
-        <!-- Example device -->
         <div class="flex items-center justify-between">
           <span class="font-medium">Verlichting woonkamer</span>
           <label class="relative inline-flex items-center cursor-pointer">
@@ -105,153 +127,6 @@
   </main>
 
   <script>
-    // Mock weather data for Kerkrade
-    const weatherData = {
-      current: {
-        temp: 18,
-        description: "Zonnig",
-        icon: "☀️"
-      },
-      hourly: [
-        { time: "14:00", temp: 18, icon: "☀️", rain: 0 },
-        { time: "15:00", temp: 19, icon: "☀️", rain: 0 },
-        { time: "16:00", temp: 18, icon: "⛅", rain: 0 },
-        { time: "17:00", temp: 17, icon: "🌧️", rain: 2 },
-        { time: "18:00", temp: 16, icon: "🌧️", rain: 5 },
-        { time: "19:00", temp: 15, icon: "🌧️", rain: 8 },
-        { time: "20:00", temp: 14, icon: "🌧️", rain: 12 },
-        { time: "21:00", temp: 13, icon: "🌧️", rain: 15 }
-      ],
-      buienalarm: {
-        totalRain: 42
-      },
-      knmiAlarm: {
-        code: "Code geel",
-        description: "Waarschuwing voor zware buien en onweer in de regio Limburg."
-      }
-    };
-
-    // Initialize Weather Display
-    function initWeather() {
-      // Current Weather
-      document.getElementById('temp').textContent = weatherData.current.temp + '°C';
-      document.getElementById('description').textContent = weatherData.current.description;
-      document.getElementById('weather-icon').textContent = weatherData.current.icon;
-
-      // Buienalarm Rain Expected
-      document.getElementById('rain-expected').textContent = weatherData.buienalarm.totalRain;
-
-      // KNMI Weather Alarm
-      const alarmCode = weatherData.knmiAlarm.code.toLowerCase();
-      const alarmDesc = weatherData.knmiAlarm.description;
-      const alarmElement = document.getElementById('weather-alarm');
-      const codeElement = document.getElementById('weather-alarm-code');
-      const descElement = document.getElementById('weather-alarm-desc');
-
-      codeElement.textContent = weatherData.knmiAlarm.code;
-      descElement.textContent = alarmDesc;
-
-      // Reset colour classes
-      alarmElement.classList.remove('weather-code-green', 'weather-code-yellow', 'weather-code-red', 'weather-code-none');
-
-      // Apply colour based on code
-      if (alarmCode.includes('groen')) {
-        alarmElement.classList.add('weather-code-green');
-      } else if (alarmCode.includes('geel')) {
-        alarmElement.classList.add('weather-code-yellow');
-      } else if (alarmCode.includes('rood')) {
-        alarmElement.classList.add('weather-code-red');
-      } else {
-        alarmElement.classList.add('weather-code-none');
-      }
-
-      // Hourly forecast
-      const hourlyContainer = document.getElementById('hourly-forecast');
-      hourlyContainer.innerHTML = ''; // clear any existing
-      weatherData.hourly.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'flex flex-col items-center bg-gray-50 p-2 rounded';
-        card.innerHTML = `
-          <div class="text-xl">${item.icon}</div>
-          <div class="text-sm font-medium">${item.temp}°C</div>
-          <div class="text-xs text-gray-600">${item.time}</div>
-        `;
-        hourlyContainer.appendChild(card);
-      });
-
-      // Temperature line chart
-      const ctx = document.getElementById('tempChart').getContext('2d');
-      const labels = weatherData.hourly.map(h => h.time);
-      const temps = weatherData.hourly.map(h => h.temp);
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Temperatuur (°C)',
-            data: temps,
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59,130,246,0.1)',
-            tension: 0.3,
-            fill: true
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: { beginAtZero: false }
-          }
-        }
-      });
-    }
-
-    // Dummy Energy Consumption Chart
-    function initEnergyChart() {
-      const ctx = document.getElementById('energyChart').getContext('2d');
-      const labels = ['Jan', 'Feb', 'Mrt', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const data = [120, 150, 130, 170, 160, 180, 200, 190, 175, 165, 155, 140];
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Energie (kWh)',
-            data: data,
-            backgroundColor: '#10b981'
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
-      });
-    }
-
-    // Device toggle handling (simple console log)
-    function initDeviceToggles() {
-      document.querySelectorAll('.toggle-checkbox').forEach(cb => {
-        cb.addEventListener('change', e => {
-          const device = e.target.dataset.device;
-          const state = e.target.checked ? 'ON' : 'OFF';
-          console.log(`Device ${device} switched ${state}`);
-        });
-      });
-    }
-
-    // Initialise everything after DOM is ready
-    document.addEventListener('DOMContentLoaded', () => {
-      initWeather();
-      initEnergyChart();
-      initDeviceToggles();
-    });
-  </script>
-</body>
-</html>
+    const LAT = 50.8658;
+    const LON = 6.0625;
+    const WEATHER_API = `https://api.open-meteo.com/v1/forecast?latitude=${LAT
