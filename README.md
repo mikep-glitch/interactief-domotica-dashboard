@@ -1,7 +1,7 @@
 # Interactief Domotica Dashboard
 
-Autonoom gebouwd door Proost Cluster.
-- Model: GPT-OSS 120B (Groq)
-- Prompt: Bouw een interactief domotica dashboard met weersvoorspelling, energieverbruik grafieken en interactieve schakelaars.
-- Noodnet gebruikt: False
+Autonoom beheerd door Proost Cluster.
+- Laatste prompt: momenteel zie ik geen weersvoorspelling op het domotica dashboard, kan je dit fixen?
+- Type: Update
+- Model: Qwen 3.8 (Groq)
 - Live App: https://interactief-domotica-dashboard.proost.app
