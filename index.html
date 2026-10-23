@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <title>Interactief Domotica Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .toggle-checkbox:checked + .toggle-label {
+      @apply bg-green-500;
+    }
+    .toggle-checkbox:checked + .toggle-label .toggle-dot {
+      @apply translate-x-5;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+  <header class="bg-blue-600 text-white p-4 shadow-md">
+    <h1 class="text-2xl font-bold">Interactief Domotica Dashboard</h1>
+  </header>
+
+  <main class="flex-1 p-4 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <!-- Weather Section -->
+    <section class="bg-white rounded-lg shadow p-4 flex flex-col">
+      <h2 class="text-xl font-semibold mb-2">Weersvoorspelling</h2>
+      <div id="weather" class="flex items-center space-x-4">
+        <div class="text-5xl" id="weather-icon">☀️</div>
+        <div>
+          <p class="text-2xl" id="temp">--°C</p>
+          <p class="text-gray-600" id="description">--</p>
+        </div>
+      </div>
+      <canvas id="tempChart" class="mt-4"></canvas>
+    </section>
+
+    <!-- Energy Consumption Section -->
+    <section class="bg-white rounded-lg shadow p-4 flex flex-col">
+      <h2 class="text-xl font-semibold mb-2">Energieverbruik</h2>
+      <canvas id="energyChart" class="flex-1"></canvas>
+    </section>
+
+    <!-- Devices Control Section -->
+    <section class="bg-white rounded-lg shadow p-4">
+      <h2 class="text-xl font-semibold mb-4">Apparaten</h2>
+      <div class="space-y-4">
+        <!-- Example device -->
+        <div class="flex items-center justify-between">
+          <span class="font-medium">Verlichting woonkamer</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only toggle-checkbox" data-device="light_living" checked>
+            <div class="toggle-label w-11 h-6 bg-gray-300 rounded-full transition-colors duration-200">
+              <div class="toggle-dot absolute left-0 top-0 w-5 h
