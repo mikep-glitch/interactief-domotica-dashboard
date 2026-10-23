@@ -37,6 +37,18 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    .hourly-item {
+      min-width: 70px;
+      text-align: center;
+      padding: 8px 4px;
+      border-radius: 8px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+    .hourly-item:hover {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
@@ -108,25 +120,4 @@
           <span class="font-medium">Verwarming</span>
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only toggle-checkbox" data-device="heater" checked>
-            <div class="toggle-label w-11 h-6 bg-gray-300 rounded-full transition-colors duration-200">
-              <div class="toggle-dot absolute left-0 top-0 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200"></div>
-            </div>
-          </label>
-        </div>
-        <div class="flex items-center justify-between">
-          <span class="font-medium">Garden sprinkler</span>
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" class="sr-only toggle-checkbox" data-device="sprinkler">
-            <div class="toggle-label w-11 h-6 bg-gray-300 rounded-full transition-colors duration-200">
-              <div class="toggle-dot absolute left-0 top-0 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200"></div>
-            </div>
-          </label>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <script>
-    const LAT = 50.8658;
-    const LON = 6.0625;
-    const WEATHER_API = `https://api.open-meteo.com/v1/forecast?latitude=${LAT
+            <div class="toggle-label w-11 h-6 bg-gray
