@@ -10,10 +10,10 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     .toggle-checkbox:checked + .toggle-label {
-      @apply bg-green-500;
+      background-color: #10B981; /* Tailwind green-500 */
     }
     .toggle-checkbox:checked + .toggle-label .toggle-dot {
-      @apply translate-x-5;
+      transform: translateX(1.25rem); /* Tailwind translate-x-5 */
     }
   </style>
 </head>
@@ -31,6 +31,12 @@
         <div>
           <p class="text-2xl" id="temp">--°C</p>
           <p class="text-gray-600" id="description">--</p>
+        </div>
+      </div>
+      <div class="mt-4">
+        <h3 class="text-sm font-medium text-gray-700 mb-2">Uurlijkse voorspelling</h3>
+        <div id="hourly-forecast" class="flex space-x-4 overflow-x-auto pb-2">
+          <!-- Hourly forecast items will be populated by JS -->
         </div>
       </div>
       <canvas id="tempChart" class="mt-4"></canvas>
@@ -52,4 +58,41 @@
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" class="sr-only toggle-checkbox" data-device="light_living" checked>
             <div class="toggle-label w-11 h-6 bg-gray-300 rounded-full transition-colors duration-200">
-              <div class="toggle-dot absolute left-0 top-0 w-5 h
+              <div class="toggle-dot absolute left-0 top-0 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200"></div>
+            </div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="font-medium">Verwarming</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only toggle-checkbox" data-device="heater" checked>
+            <div class="toggle-label w-11 h-6 bg-gray-300 rounded-full transition-colors duration-200">
+              <div class="toggle-dot absolute left-0 top-0 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200"></div>
+            </div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="font-medium">Garden sprinkler</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" class="sr-only toggle-checkbox" data-device="sprinkler">
+            <div class="toggle-label w-11 h-6 bg-gray-300 rounded-full transition-colors duration-200">
+              <div class="toggle-dot absolute left-0 top-0 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-200"></div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Mock weather data
+    const weatherData = {
+      current: {
+        temp: 18,
+        description: "Clear"
+      }
+    };
+    // Placeholder for additional JavaScript logic
+  </script>
+</body>
+</html>
